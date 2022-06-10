@@ -21,28 +21,28 @@ rule all:
         expand("fastqcresult/{rep}_fastp.log",rep=REP_INDEX)
 rule fastp:
     input:
-          "RawData/{rep}_1.fq.gz",
-          "RawData/{rep}_2.fq.gz"
+        "RawData/{rep}_1.fq.gz",
+        "RawData/{rep}_2.fq.gz"
 
     output:
-          "1-fastpresult/afqc_{rep}_1.fq",
-          "1-fastpresult/afqc_{rep}_2.fq",
-          "1-fastpresult/unpaired_{rep}_1.fq",
-          "1-fastpresult/unpaired_{rep}_2.fq",
-          "1-fastpresult/fastp_{rep}.html",
-          "1-fastpresult/fastp_{rep}.json"
+        "1-fastpresult/afqc_{rep}_1.fq",
+        "1-fastpresult/afqc_{rep}_2.fq",
+        "1-fastpresult/unpaired_{rep}_1.fq",
+        "1-fastpresult/unpaired_{rep}_2.fq",
+        "1-fastpresult/fastp_{rep}.html",
+        "1-fastpresult/fastp_{rep}.json"
     log:
-          "1-fastqcresult/{rep}_fastp.log"
+        "1-fastqcresult/{rep}_fastp.log"
     shell:
-          "fastp --thread 16 --n_base_limit 15 \
-          -h {output[4]} -j {output[5]} \
-          --qualified_quality_phred 25 \
-          --unqualified_percent_limit 50 \
-          -i {input[0]} -o {output[0]} \
-          -I {input[1]} -O {output[1]} \
-          --unpaired1 {output[2]} \
-          --unpaired2 {output[3]} \
-          > {log} 2>&1 "
+        "fastp --thread 16 --n_base_limit 15 \
+        -h {output[4]} -j {output[5]} \
+        --qualified_quality_phred 25 \
+        --unqualified_percent_limit 50 \
+        -i {input[0]} -o {output[0]} \
+        -I {input[1]} -O {output[1]} \
+        --unpaired1 {output[2]} \
+        --unpaired2 {output[3]} \
+        > {log} 2>&1 "
 
 rule bwa:
     input:
@@ -97,11 +97,11 @@ rule Base_Quality_Score_Recalibration:
         "5-baserecalibrator/{rep}_bqsr_data.log"
     shell:
         "gatk BaseRecalibrator \
-         -R /home/bzheng/genomics-data/X101SC21110256-Z01-J031/ref/galGal6a/GCA_000002315.5_GRCg6a_genomic.fna \
-         -I {input} \
-         --use-original-qualities \
-         -O {output} \
-         --known-sites /home/bzheng/genomics-data/X101SC21110256-Z01-J031/ref/variation_gallus_gallus/gallus_gallus.20220314.vcf"
+        -R /home/bzheng/genomics-data/X101SC21110256-Z01-J031/ref/galGal6a/GCA_000002315.5_GRCg6a_genomic.fna \
+        -I {input} \
+        --use-original-qualities \
+        -O {output} \
+        --known-sites /home/bzheng/genomics-data/X101SC21110256-Z01-J031/ref/variation_gallus_gallus/gallus_gallus.20220314.vcf"
 
 rule ApplyBQSR:
     input:
