@@ -7,31 +7,44 @@
 REP_INDEX = {"HS007","HS012","HS013","HS031","HS043","HS066","HS071","HS072","HS080","HS084", \
              "HT011","HT027","HT032","HT044","HT047","HT055","HT056","HT061","HT068","HT077", \
              "HT081","HT089"}
-INDEX_BWA = "/home/bzheng/genomics-data/X101SC21110256-Z01-J031/ref/galGal6a/galGal6a/"
+{INDEX_BWA} = "/home/bzheng/genomics-data/X101SC21110256-Z01-J031/ref/galGal6a/galGal6a/"
 
 
 rule all:
     input:
-        expand("1-fastpresult/afqc_{rep}_1.fq",rep=REP_INDEX),
-        expand("1-fastpresult/afqc_{rep}_2.fq",rep=REP_INDEX),
-        expand("1-fastpresult/unpaired_{rep}_1.fq",rep=REP_INDEX),
-        expand("1-fastpresult/unpaired_{rep}_2.fq",rep=REP_INDEX),
-        expand("1-fastpresult/fastp_{rep}.html",rep=REP_INDEX),
-        expand("1-fastpresult/fastp_{rep}.json",rep=REP_INDEX),
-        expand("1-fastpresult/{rep}_fastp.log",rep=REP_INDEX)
+        expand("fastpresult/afqc_{rep}_1.fq",rep=REP_INDEX),
+        expand("fastpresult/afqc_{rep}_2.fq",rep=REP_INDEX),
+        expand("fastpresult/unpaired_{rep}_1.fq",rep=REP_INDEX),
+        expand("fastpresult/unpaired_{rep}_2.fq",rep=REP_INDEX),
+        expand("fastpresult/fastp_{rep}.html",rep=REP_INDEX),
+        expand("fastpresult/fastp_{rep}.json",rep=REP_INDEX),
+        expand("fastqcresult/{rep}_fastp.log",rep=REP_INDEX),
+        expand("2-bwa_mapping/afqc_{rep}_bwa_gal6a.bam",rep=REP_INDEX),
+        expand("2-bwa_mapping/afqc_{rep}_bwa_gal6a.log",rep=REP_INDEX),
+        expand("3-bwa_sorted/afqc_{rep}_bwa_sorted_gal6a.bam",rep=REP_INDEX),
+        expand("3-bwa_sorted/afqc_{rep}_bwa_sorted_gal6a.log",rep=REP_INDEX),
+        expand("4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam",rep=REP_INDEX),
+        expand("4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a_metrics.txt",rep=REP_INDEX),
+        expand("4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.log",rep=REP_INDEX),
+        expand("5-baserecalibrator/{rep}_bqsr_data.table",rep=REP_INDEX),
+        expand("5-baserecalibrator/{rep}_bqsr_data.log",rep=REP_INDEX),
+        expand("6-BQSR/{rep}_bqsr.bam",rep=REP_INDEX),
+        expand("6-BQSR/{rep}_bqsr.log",rep=REP_INDEX)
+
 rule fastp:
     input:
         "RawData/{rep}_1.fq.gz",
         "RawData/{rep}_2.fq.gz"
+
     output:
-        "1-fastpresult/afqc_{rep}_1.fq",
-        "1-fastpresult/afqc_{rep}_2.fq",
-        "1-fastpresult/unpaired_{rep}_1.fq",
-        "1-fastpresult/unpaired_{rep}_2.fq",
-        "1-fastpresult/fastp_{rep}.html",
+        "1-fastpresult/afqc_{rep}_1.fq",\
+        "1-fastpresult/afqc_{rep}_2.fq",\
+        "1-fastpresult/unpaired_{rep}_1.fq",\
+        "1-fastpresult/unpaired_{rep}_2.fq",\
+        "1-fastpresult/fastp_{rep}.html",\
         "1-fastpresult/fastp_{rep}.json"
     log:
-        "1-fastpresult/{rep}_fastp.log"
+        "1-fastqcresult/{rep}_fastp.log"
     shell:
         "fastp --thread 16 --n_base_limit 15 \
         -h {output[4]} -j {output[5]} \
