@@ -23,7 +23,6 @@ rule fastp:
     input:
         "RawData/{rep}_1.fq.gz",
         "RawData/{rep}_2.fq.gz"
-
     output:
         "1-fastpresult/afqc_{rep}_1.fq",
         "1-fastpresult/afqc_{rep}_2.fq",
