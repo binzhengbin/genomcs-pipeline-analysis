@@ -7,7 +7,7 @@
 REP_INDEX = {"HS007","HS012","HS013","HS031","HS043","HS066","HS071","HS072","HS080","HS084", \
              "HT011","HT027","HT032","HT044","HT047","HT055","HT056","HT061","HT068","HT077", \
              "HT081","HT089"}
-{INDEX_BWA} = "/home/bzheng/genomics-data/X101SC21110256-Z01-J031/ref/galGal6a/galGal6a/"
+INDEX_BWA = "/home/bzheng/genomics-data/X101SC21110256-Z01-J031/ref/galGal6a/galGal6a/"
 
 
 rule all:
