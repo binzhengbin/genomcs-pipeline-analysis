@@ -12,13 +12,13 @@ INDEX_BWA = "/home/bzheng/genomics-data/X101SC21110256-Z01-J031/ref/galGal6a/gal
 
 rule all:
     input:
-        expand("fastpresult/afqc_{rep}_1.fq",rep=REP_INDEX),
-        expand("fastpresult/afqc_{rep}_2.fq",rep=REP_INDEX),
-        expand("fastpresult/unpaired_{rep}_1.fq",rep=REP_INDEX),
-        expand("fastpresult/unpaired_{rep}_2.fq",rep=REP_INDEX),
-        expand("fastpresult/fastp_{rep}.html",rep=REP_INDEX),
-        expand("fastpresult/fastp_{rep}.json",rep=REP_INDEX),
-        expand("fastqcresult/{rep}_fastp.log",rep=REP_INDEX)
+        expand("1-fastpresult/afqc_{rep}_1.fq",rep=REP_INDEX),
+        expand("1-fastpresult/afqc_{rep}_2.fq",rep=REP_INDEX),
+        expand("1-fastpresult/unpaired_{rep}_1.fq",rep=REP_INDEX),
+        expand("1-fastpresult/unpaired_{rep}_2.fq",rep=REP_INDEX),
+        expand("1-fastpresult/fastp_{rep}.html",rep=REP_INDEX),
+        expand("1-fastpresult/fastp_{rep}.json",rep=REP_INDEX),
+        expand("1-fastpresult/{rep}_fastp.log",rep=REP_INDEX)
 rule fastp:
     input:
         "RawData/{rep}_1.fq.gz",
@@ -31,7 +31,7 @@ rule fastp:
         "1-fastpresult/fastp_{rep}.html",
         "1-fastpresult/fastp_{rep}.json"
     log:
-        "1-fastqcresult/{rep}_fastp.log"
+        "1-fastpresult/{rep}_fastp.log"
     shell:
         "fastp --thread 16 --n_base_limit 15 \
         -h {output[4]} -j {output[5]} \
