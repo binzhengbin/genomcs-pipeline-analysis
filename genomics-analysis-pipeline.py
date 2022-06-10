@@ -88,7 +88,7 @@ rule remove_dumplication:
     input:
         "3-bwa_sorted/afqc_{rep}_bwa_sorted_gal6a.bam"
     output:
-        "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam"
+        "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam",
         "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a_metrics.txt"
     log:
         "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.log"
@@ -119,7 +119,7 @@ rule Base_Quality_Score_Recalibration:
 
 rule ApplyBQSR:
     input:
-        "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam"
+        "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam",
         "5-baserecalibrator/{rep}_bqsr_data.table"
     output:
         "6-BQSR/{rep}_bqsr.bam"
