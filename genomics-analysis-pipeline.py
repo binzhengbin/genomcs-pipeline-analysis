@@ -52,7 +52,7 @@ rule fastp:
     log:
         "1-fastpresult/{rep}_fastp.log"
     shell:
-        "fastp --thread 16 --n_base_limit 15 \
+        "fastp --thread 14 --n_base_limit 15 \
         -h {output[4]} -j {output[5]} \
         --trim_front1 3 \
         --trim_front2 3 \
@@ -72,27 +72,27 @@ rule bwa:
         "1-fastpresult/afqc_{rep}_1.fq",
         "1-fastpresult/afqc_{rep}_2.fq"
     output:
-        "2-bwa_mapping/afqc_{rep}_bwa_gal6a.bam"
+        "2-bwa_mapping/afqc_{rep}_bwa_gal6a.sam"
     params:
         "@RG\tID:XinHua\tSM:{rep}\tPL:illumina"
     log:
         "2-bwa_mapping/afqc_{rep}_bwa_gal6a.log"
     shell:
         "bwa mem {INDEX_BWA} -t 12 \
+        -aM \
         -R {params} \
-        {input[0]} {input[1]} | \
-        samtools view -S -b - > {output} \
+        {input[0]} {input[1]} > {output} \
         > {log} 2>&1"
 
 rule bam_file_sort:
     input:
-        "2-bwa_mapping/afqc_{rep}_bwa_gal6a.bam"
+        "2-bwa_mapping/afqc_{rep}_bwa_gal6a.sam"
     output:
         "3-bwa_sorted/afqc_{rep}_bwa_sorted_gal6a.bam"
     log:
         "3-bwa_sorted/afqc_{rep}_bwa_sorted_gal6a.log"
     shell:
-        "samtolls sort -@ 4 -m 4G -O bam -o {output} {input} \
+        "samtolls sort -@ 4 -m 20G -O bam -o {output} {input} \
         > {log} 2>&1 "
 
 rule remove_dumplication:
