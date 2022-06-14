@@ -34,8 +34,9 @@ rule all:
         expand("5-baserecalibrator/{rep}_bqsr_data.table",rep=REP_INDEX),
         expand("5-baserecalibrator/{rep}_bqsr_data.log",rep=REP_INDEX),
         expand("6-BQSR/{rep}_bqsr.bam",rep=REP_INDEX),
-        expand("6-BQSR/{rep}_bqsr.log",rep=REP_INDEX)
-
+        expand("6-BQSR/{rep}_bqsr.log",rep=REP_INDEX),
+        expand("7-HaplotypeCaller/{rep}_SNP_only.GCVF.gz",rep=REP_INDEX),
+        expand("7-HaplotypeCaller/{rep}_SNP_only.log",rep=REP_INDEX),
 rule fastp:
     input:
         "RawData/{rep}_1.fq.gz",\
@@ -55,6 +56,7 @@ rule fastp:
         -h {output[4]} -j {output[5]} \
         --trim_front1 3 \
         --trim_front2 3 \
+        --length_required 30 \
         --adapter_sequence TCTTTCCCTACACGACGCTCTTCCGATCT \
         --adapter_sequence_r2 AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC \
         --qualified_quality_phred 20 \
@@ -97,14 +99,16 @@ rule remove_dumplication:
     input:
         "3-bwa_sorted/afqc_{rep}_bwa_sorted_gal6a.bam"
     output:
-        "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam"
+        "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam",
         "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a_metrics.txt"
+    params:
+        "-Xmx20G"
     log:
         "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.log"
     shell:
         "gatk MarkDuplicates \
-        --java-options "-Xmx20G" \
-        --spark-master local[5] \
+        --java-options {params} \
+        --spark-master local[4] \
         --INPUT {input} \
         --OUTPUT {output[0]} \
         --METRICS_FILE {output[1]} \
@@ -115,12 +119,14 @@ rule Base_Quality_Score_Recalibration:
         "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam"
     output:
         "5-baserecalibrator/{rep}_bqsr_data.table"
+    params:
+        "-Xmx20G"
     log:
         "5-baserecalibrator/{rep}_bqsr_data.log"
     shell:
         "gatk BaseRecalibratorSpark \
-        --java-options "-Xmx20G" \
-        --spark-master local[5] \
+        --java-options {params} \
+        --spark-master local[4] \
         -R {REFERENCE} \
         -I {input} \
         -O {output} \
@@ -129,15 +135,17 @@ rule Base_Quality_Score_Recalibration:
 
 rule ApplyBQSR:
     input:
-        "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam"
+        "4-rmdup/afqc_{rep}_bwa_sorted_markdup_gal6a.bam",
         "5-baserecalibrator/{rep}_bqsr_data.table"
     output:
         "6-BQSR/{rep}_bqsr.bam"
+    params:
+        "-Xmx20G"
     log:
         "6-BQSR/{rep}_bqsr.log"
     shell:
         "gatk ApplyBQSR \
-        --java-options "-Xmx20G" \
+        --java-options {params} \
         -R {REFERENCE} \
         -I {input[0]} \
         -O {output} \
@@ -149,11 +157,13 @@ rule HaplotypeCaller:
         "6-BQSR/{rep}_bqsr.bam"
     output:
         "7-HaplotypeCaller/{rep}_SNP_only.GCVF.gz"
+    params:
+        "-Xmx20G"
     log:
         "7-HaplotypeCaller/{rep}_SNP_only.log"
     shell:
         "gatk HaplotypeCaller \
-        --java-options "-Xmx20G" \
+        --java-options {params} \
         -R {REFERENCE} \
         -ERC GVCF \
         -I {input} \
